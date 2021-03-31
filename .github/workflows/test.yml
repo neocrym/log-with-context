@@ -1,0 +1,43 @@
+name: test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - 'v*' # Don't run these tests twice when cutting a new version.
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        os: [ubuntu-20.04, macos-10.15, windows-2019]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install pip and poetry
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install poetry
+        poetry config virtualenvs.in-project true
+
+    - name: Install the package
+      run: make install
+
+    - name: Check formatting
+      run: make fmt-check
+
+    - name: Run lint
+      run: make lint
+
+    - name: Run tests
+      run: make test

@@ -1,0 +1,17 @@
+new_celery_config Makefile commands:
+
+help:       displays this help command.
+
+install:    installs Python dependencies in a Poetry virtualenv.
+
+fmt:        formats Python source code in-place.
+
+fmt-check:  tells you if the source code needs to be formatted, but
+            does not do the formatting by itself.
+
+lint:       checks the source code for Python errors.
+
+build:      builds a Python wheel and places it in the `dist` dir.
+
+test:       runs unit tests.
+
