@@ -1,4 +1,4 @@
-new_celery_config Makefile commands:
+log-with-context Makefile commands:
 
 help:       displays this help command.
 
