@@ -1,7 +1,9 @@
 """
 Adds thread-local context to a Python logger.
 """
+import collections
 import logging
+import os
 import threading
 from typing import Any, Callable, Mapping, Optional, Union
 
@@ -9,8 +11,13 @@ _EXTRA_TYPE = Mapping[str, Any]
 
 _THREAD_LOCAL = threading.local()
 
+_THREAD_LOCAL.pids = collections.defaultdict(dict)
 
-_THREAD_LOCAL.extra = dict()
+
+def init_extra():
+    """Initialize our thread-local variable for storing contexts."""
+    if not hasattr(_THREAD_LOCAL, "pids"):
+        _THREAD_LOCAL.pids = collections.defaultdict(dict)
 
 
 def get_extra() -> _EXTRA_TYPE:
@@ -19,24 +26,23 @@ def get_extra() -> _EXTRA_TYPE:
 
     This initializes the thread-local variable if necessary.
     """
-    try:
-        return _THREAD_LOCAL.extra
-    except AttributeError:
-        _THREAD_LOCAL.extra = dict()
-    return _THREAD_LOCAL.extra
+    init_extra()
+    pid = os.getpid()
+    return _THREAD_LOCAL.pids[pid]
 
 
 def set_extra(extra: _EXTRA_TYPE) -> _EXTRA_TYPE:
     """
     Sets the thread-local context to a new value.
 
-    Note that you will need to preserve and restore the old value
-    if you don't want to permanently add the keys in this value.
-    In that case, you would be better off using the context manager
-    :py:class:`add_logging_context`.
+    This erases whatever the context used to be. If you would rather
+    restore that old value later, you might prefer using the
+    :py:class:`add_logging_context` context manager.
     """
-    _THREAD_LOCAL.extra = extra
-    return _THREAD_LOCAL.extra
+    init_extra()
+    pid = os.getpid()
+    _THREAD_LOCAL.pids[pid] = extra
+    return _THREAD_LOCAL.pids[pid]
 
 
 class Logger:
@@ -118,15 +124,15 @@ class add_logging_context:
     def __init__(self, **kwargs):
         """Create a new context manager."""
         self._new_extra = kwargs
-        self._old_extra = get_extra()
+        self._old_extra = {}
 
     def __enter__(self):
         """Add the new kwargs to the thread-local state."""
         self._old_extra = get_extra()
-        set_extra({**_THREAD_LOCAL.extra, **self._new_extra})
+        set_extra({**self._old_extra, **self._new_extra})
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Return the thread-local state to what it used to be."""
-        _THREAD_LOCAL.extra = set_extra(self._old_extra)
+        set_extra(self._old_extra)
         return False
