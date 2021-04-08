@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "log-with-context"
-version = "0.1.0"
+version = "0.0.0"
 description = ""
 authors = ["James Mishra <james.mishra@neocrym.com>"]
 
