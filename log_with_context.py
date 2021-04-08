@@ -62,8 +62,7 @@ class Logger:
         Initialize.
 
         Args:
-            logger: A logging.Logger or ContextLogger instance to inherit
-                from.
+            logger: A logging.Logger instance to wrap.
         """
         if isinstance(logger, Logger):
             self.base_logger: Any = logger.base_logger
