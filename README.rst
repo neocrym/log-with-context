@@ -12,7 +12,7 @@ This library is available on PyPI and can be installed with
 
 .. code:: plain
 
-    pip3 install log-with-context
+    python3 -m pip install log-with-context
 
 Usage
 -----
