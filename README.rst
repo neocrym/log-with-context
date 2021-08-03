@@ -10,7 +10,7 @@ Installation
 
 This library is available on PyPI and can be installed with
 
-.. code:: plain
+.. code:: bash
 
     python3 -m pip install log-with-context
 
