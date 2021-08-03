@@ -1,8 +1,11 @@
 [tool.poetry]
 name = "log-with-context"
 version = "0.0.0"
-description = ""
-authors = ["James Mishra <james.mishra@neocrym.com>"]
+description = "a thread-local, context-preserving Python logger"
+authors = ["Neocrym Records Inc. <engineering@neocrym.com>"]
+readme = "README.rst"
+repository = "https://github.com/neocrym/log-with-context"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.6"
