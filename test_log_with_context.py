@@ -26,7 +26,7 @@ def process_worker(val):
     logger = Logger(logger=base_logger)
 
     logger.debug("1")
-    base_logger.debug.assert_called_with("1", extra=dict())
+    base_logger.debug.assert_called_with("1", extra={})
     with add_logging_context(val=val):
         logger.debug("2")
         base_logger.debug.assert_called_with("2", extra=dict(val=val))
@@ -53,7 +53,7 @@ class TestLogger(unittest.TestCase):
 
             with self.subTest(name=f"logger.{method_name}"):
                 self.gl(method_name)("1")
-                self.gb(method_name).assert_called_with("1", extra=dict())
+                self.gb(method_name).assert_called_with("1", extra={})
 
                 with add_logging_context(a=1):
                     self.gl(method_name)("2")
@@ -80,10 +80,10 @@ class TestLogger(unittest.TestCase):
                     self.gb(method_name).assert_called_with("6", extra=dict(a=1))
 
                 self.gl(method_name)("7")
-                self.gb(method_name).assert_called_with("7", extra=dict())
+                self.gb(method_name).assert_called_with("7", extra={})
 
             self.gl(method_name)("8")
-            self.gb(method_name).assert_called_with("8", extra=dict())
+            self.gb(method_name).assert_called_with("8", extra={})
 
     def test_inline_extra(self):
         """Test that we can add one-off additions to our context."""
@@ -99,7 +99,7 @@ class TestLogger(unittest.TestCase):
 
         def thread_worker(val):
             self.logger.debug("1")
-            self.base_logger.debug.assert_called_with("1", extra=dict())
+            self.base_logger.debug.assert_called_with("1", extra={})
             with add_logging_context(val=val):
                 self.logger.debug("2")
                 self.base_logger.debug.assert_called_with("2", extra=dict(val=val))
