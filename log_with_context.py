@@ -75,7 +75,12 @@ class Logger:
             **self.extra,
             **kwargs.pop("extra", {}),
         }
-        return func(msg, *args, extra=extra, **kwargs)
+        # Because we wrap a logging.Logger instance through 2 layers
+        # of redirection, we need to add 2 to the logger's stacklevel
+        # so we correctly log the logging statement's line number and function name
+        original_stacklevel = kwargs.pop("stacklevel", 1)
+        stacklevel = original_stacklevel + 2
+        return func(msg, *args, extra=extra, stacklevel=stacklevel, **kwargs)
 
     @property
     def extra(self) -> _EXTRA_TYPE:
