@@ -2,6 +2,8 @@ log-with-context Makefile commands:
 
 help:       displays this help command.
 
+update:     updates Python dependencies.
+
 install:    installs Python dependencies in a Poetry virtualenv.
 
 fmt:        formats Python source code in-place.
