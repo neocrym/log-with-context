@@ -39,11 +39,11 @@ jobs:
       run: make install
 
     - name: Check formatting (Ubuntu Python 3.8 only)
-      if: matrix.os == 'ubuntu-20.04' && matrix.python-version == "3.8"
+      if: matrix.os == 'ubuntu-20.04' && matrix.python-version == '3.8'
       run: make fmt-check
 
     - name: Run lint (Ubuntu Python 3.8 only)
-      if: matrix.os == 'ubuntu-20.04' && matrix.python-version == "3.8"
+      if: matrix.os == 'ubuntu-20.04' && matrix.python-version == '3.8'
       run: make lint
 
     - name: Run tests
