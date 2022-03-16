@@ -23,8 +23,7 @@ jobs:
     - name: Build the wheel
       id: publish_to_pypi
       run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install poetry
+        python3 -m pip install --upgrade pip wheel poetry
         python3 -m poetry config virtualenvs.in-project true
         python3 -m poetry version ${{ steps.get_version.outputs.VERSION }}
         python3 -m poetry build
