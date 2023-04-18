@@ -5,6 +5,9 @@ log-with-context--a thread-local, context-preserving Python logger
 thread-local context to be passed as `extra` to Python
 `logging <https://docs.python.org/3/library/logging.html>`_ methods.
 
+Note that ``log-with-context`` assumes that you are passing context
+in a multithreading sense--not in an asyncio sense.
+
 Installation
 ------------
 
