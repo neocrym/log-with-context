@@ -4,6 +4,7 @@ import concurrent.futures
 import logging
 import unittest
 import unittest.mock
+from typing import Any
 
 from log_with_context import Logger, add_logging_context
 
@@ -20,7 +21,7 @@ LOG_METHOD_NAMES = [
 ]
 
 
-def process_worker(val):
+def process_worker(val: Any) -> None:
     """See how our logger interacts with multiprocessing."""
     base_logger = unittest.mock.Mock(spec=LOGGER)
     logger = Logger(logger=base_logger)
@@ -35,22 +36,21 @@ def process_worker(val):
 class TestLogger(unittest.TestCase):
     """Unit tests for :py:class:`log_with_context.Logger`."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.base_logger = unittest.mock.Mock(spec=LOGGER)
         self.logger = Logger(logger=self.base_logger)
 
-    def gl(self, method_name: str):
+    def gl(self, method_name: str) -> Any:
         """Execute a given method on our test logger."""
         return getattr(self.logger, method_name)
 
-    def gb(self, method_name: str):
+    def gb(self, method_name: str) -> Any:
         """Execute a given method on our base logger mock."""
         return getattr(self.base_logger, method_name)
 
-    def test_add_logging_context(self):
+    def test_add_logging_context(self) -> None:
         """Test that :py:class:`add_logging_context` works."""
         for method_name in LOG_METHOD_NAMES:
-
             with self.subTest(name=f"logger.{method_name}"):
                 self.gl(method_name)("1")
                 self.gb(method_name).assert_called_with("1", extra={}, stacklevel=3)
@@ -89,7 +89,7 @@ class TestLogger(unittest.TestCase):
             self.gl(method_name)("8")
             self.gb(method_name).assert_called_with("8", extra={}, stacklevel=3)
 
-    def test_inline_extra(self):
+    def test_inline_extra(self) -> None:
         """Test that we can add one-off additions to our context."""
         for method_name in LOG_METHOD_NAMES:
             with self.subTest(name=f"logger.{method_name}"):
@@ -98,10 +98,10 @@ class TestLogger(unittest.TestCase):
                     "%s", method_name, extra=dict(hello=method_name), stacklevel=3
                 )
 
-    def test_thread_local(self):
+    def test_thread_local(self) -> None:
         """Test that our logging context is indeed thread-local."""
 
-        def thread_worker(val):
+        def thread_worker(val: Any) -> None:
             self.logger.debug("1")
             self.base_logger.debug.assert_called_with("1", extra={}, stacklevel=3)
             with add_logging_context(val=val):
@@ -114,7 +114,7 @@ class TestLogger(unittest.TestCase):
             with add_logging_context(a=1):
                 list(exc.map(thread_worker, [1, 2]))
 
-    def test_process_local(self):
+    def test_process_local(self) -> None:
         """Test how our logger works with multiple processes."""
         with concurrent.futures.ProcessPoolExecutor(max_workers=2) as exc:
             with add_logging_context(a=1):

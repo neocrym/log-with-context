@@ -23,9 +23,15 @@ fmt-check:
 	$(POETRY) run black --check .
 .PHONY: fmt-check
 
-lint:
+mypy:
+	$(POETRY) run mypy --strict log_with_context.py test_log_with_context.py
+.PHONY: mypy
+
+pylint:
 	$(POETRY) run pylint log_with_context.py test_log_with_context.py
-	$(POETRY) run mypy log_with_context.py test_log_with_context.py
+.PHONY: pylint
+
+lint: pylint mypy
 .PHONY: lint
 
 build:
