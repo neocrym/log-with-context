@@ -61,18 +61,31 @@ class Logger:
     def __init__(
         self,
         name: Optional[str] = None,
-        logger: Optional[Union[logging.Logger, "Logger"]] = None,
-    ):
+        logger: Union[logging.Logger, "Logger", None] = None,
+        *,
+        initial_extra: Optional[Mapping[str, Any]] = None,
+    ) -> None:
         """
         Initialize.
 
         Args:
+            name: The name of the logger.
+
             logger: A logging.Logger instance to wrap.
+
+            initial_extra: An optional mapping of key/value pairs to
+                initialize the logger with. The values in `initial_extra`
+                are specific to this logger, and not to other loggers
+                in the same process.
         """
         if isinstance(logger, Logger):
             self.base_logger: Any = logger.base_logger
         else:
             self.base_logger = logger or logging.getLogger(name=name)
+        if initial_extra:
+            self._initial_extra = initial_extra
+        else:
+            self._initial_extra = {}
 
     def _msg(
         self, func: Callable[..., None], msg: Any, *args: Any, **kwargs: Any
@@ -92,7 +105,10 @@ class Logger:
     @property
     def extra(self) -> _EXTRA_TYPE:
         """Return the extra metadata that this logger sends with every message."""
-        return get_extra()
+        new_extra = get_extra()
+        if self._initial_extra:
+            return {**self._initial_extra, **new_extra}
+        return new_extra
 
     def debug(self, msg: Any, *args: Any, **kwargs: Any) -> None:
         """Debug."""

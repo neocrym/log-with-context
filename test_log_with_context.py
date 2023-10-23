@@ -119,3 +119,31 @@ class TestLogger(unittest.TestCase):
         with concurrent.futures.ProcessPoolExecutor(max_workers=2) as exc:
             with add_logging_context(a=1):
                 list(exc.map(process_worker, [1, 2]))
+
+    def test_extra_without_add_logging_context(self) -> None:
+        """
+        Test that we can assign an initial extra value
+        when we initialize the logger.
+        """
+        base_logger = unittest.mock.Mock(spec=LOGGER)
+        logger = Logger(logger=base_logger, initial_extra=dict(a=1))
+        self.assertEqual(logger.extra, dict(a=1))
+        self.assertEqual(self.logger.extra, dict())
+        logger.debug("1")
+        base_logger.debug.assert_called_with("1", extra=dict(a=1), stacklevel=3)
+        with add_logging_context(b=2):
+            self.assertEqual(logger.extra, dict(a=1, b=2))
+            self.assertEqual(self.logger.extra, dict(b=2))
+            logger.info("2")
+            base_logger.info.assert_called_with("2", extra=dict(a=1, b=2), stacklevel=3)
+            with add_logging_context(c=3):
+                self.assertEqual(logger.extra, dict(a=1, b=2, c=3))
+                self.assertEqual(self.logger.extra, dict(b=2, c=3))
+                logger.info("3")
+                base_logger.info.assert_called_with(
+                    "3", extra=dict(a=1, b=2, c=3), stacklevel=3
+                )
+                logger.info("4", extra=dict(d=4))
+                base_logger.info.assert_called_with(
+                    "4", extra=dict(a=1, b=2, c=3, d=4), stacklevel=3
+                )
