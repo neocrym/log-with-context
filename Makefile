@@ -24,11 +24,11 @@ fmt-check:
 .PHONY: fmt-check
 
 mypy:
-	$(POETRY) run mypy --strict log_with_context.py test_log_with_context.py
+	$(POETRY) run mypy --strict log_with_context/__init__.py test_log_with_context.py
 .PHONY: mypy
 
 pylint:
-	$(POETRY) run pylint log_with_context.py test_log_with_context.py
+	$(POETRY) run pylint log_with_context/__init__.py test_log_with_context.py
 .PHONY: pylint
 
 lint: pylint mypy
